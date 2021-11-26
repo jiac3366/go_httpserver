@@ -14,3 +14,4 @@ TLS encrypted communication, configuration and code separation, etc:
 - HTTPS
 - 代码与配置分离
 - 日志等级
+- 身份授权（基于ConfigMap）
