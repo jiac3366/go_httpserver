@@ -1,152 +1,49 @@
-
 package main
 
 import (
-	"fmt"
+	"github.com/cncamp/golang/httpserver_gin/controller"
+	"github.com/cncamp/golang/httpserver_gin/middleware"
+	"github.com/cncamp/golang/httpserver_gin/service"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/sync/errgroup"
-	"log"
+	gindump "github.com/tpkeeper/gin-dump"
 	"net/http"
-	"sync"
-	"time"
+	"os"
 )
 
-type Product struct {
-	Username    string    `json:"username" binding:"required"`
-	Name        string    `json:"name" binding:"required"`
-	Category    string    `json:"category" binding:"required"`
-	Price       int       `json:"price" binding:"gte=0"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"createdAt"`
-}
-
-type Order struct {
-	Company     string    `json:"company" binding:"required"`
-	ProductId   string    `json:"productid" binding:"required"`
-	ClientId    int       `json:"clientid"`
-	CreatedAt   time.Time `json:"createdAt"`
-}
-
-type productHandler struct {
-	sync.RWMutex
-	products map[string]Product
-}
-
-type orderHandler struct {
-	sync.RWMutex
-	orders map[string]Order
-}
-
-//func newOrderHandler() *orderHandler {
-//	return &orderHandler {
-//		orders: make(map[string]Order),
-//	}
-//}
-//
-//func (o *orderHandler) Create(c *gin.Context) {
-//
-//}
-
-
-func newProductHandler() *productHandler {
-	return &productHandler{
-		products: make(map[string]Product),
-	}
-}
-
-func (u *productHandler) Create(c *gin.Context) {
-	u.Lock()
-	defer u.Unlock()
-
-	// 1. 参数解析
-	var product Product
-	if err := c.ShouldBindJSON(&product); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// 2. 参数校验
-	if _, ok := u.products[product.Name]; ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("product %s already exist", product.Name)})
-		return
-	}
-	product.CreatedAt = time.Now()
-
-	// 3. 逻辑处理
-	u.products[product.Name] = product
-	log.Printf("Register product %s success", product.Name)
-
-	// 4. 返回结果
-	c.JSON(http.StatusOK, product)
-}
-
-func (u *productHandler) Get(c *gin.Context) {
-	u.Lock()
-	defer u.Unlock()
-
-	product, ok := u.products[c.Param("name")]
-	if !ok {
-		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Errorf("can not found product %s", c.Param("name"))})
-		return
-	}
-
-	c.JSON(http.StatusOK, product)
-}
-
-func router() http.Handler {
-	router := gin.Default()
-	productHandler := newProductHandler()
-	// 路由分组、中间件、认证
-
-	v1 := router.Group("/v1", gin.BasicAuth(gin.Accounts{"foo": "bar", "colin": "colin404"}))
-	{
-		productv1 := v1.Group("/products")
-		{
-			// 路由匹配  POST()的第2个参数类型是HandlerFunc 底层是func(*Context)
-			productv1.POST("", productHandler.Create)
-			//
-			productv1.GET(":name", productHandler.Get)
-		}
-
-	}
-
-	v2 := router.Group("/v2", gin.BasicAuth(gin.Accounts{"foo": "bar", "colin": "colin404"}))
-	{
-		orderv2 := v2.Group("/orders")
-		{
-			// 路由匹配
-			orderv2.POST("", orderHandler.Create)
-			orderv2.GET(":name", orderHandler.Get)
-		}
-	}
-
-	return router
-}
-
-
+var (
+	orderService    service.OrderService       = service.New()
+	orderController controller.OrderController = controller.New(orderService)
+)
 
 func main() {
-	var eg errgroup.Group
+	server := gin.New()
 
-	// 一进程多端口
-	insecureServer := &http.Server{
-		Addr:         ":8080",
-		Handler:      router(),
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
+	//server.Use(gin.Logger(), gin.Recovery())
+	// 自定义日志输出, 生产日志middleware.ProductionLogger, Debug日志gindump.Dump
+	server.Use(middleware.ProductionLogger(), gin.Recovery(), middleware.BasicAuth(), gindump.Dump())
+
+	apiGroup := server.Group("/api")
+	{
+		apiGroup.GET("/orders", func(ctx *gin.Context) {
+			ctx.JSON(200, orderController.FindAll())
+		})
+
+		apiGroup.POST("/orders", func(ctx *gin.Context) {
+			err := orderController.Save(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
+			}
+		})
 	}
 
-	eg.Go(func() error {
-		err := insecureServer.ListenAndServe()
-		if err != nil && err != http.ErrServerClosed {
-			log.Fatal(err)
-		}
-		return err
-	})
-
-
-
-	if err := eg.Wait(); err != nil {
-		log.Fatal(err)
+	// 设置环境变量, 达到配置与代码分离
+	port := os.Getenv("PORT")
+	if port == ""{
+		port = "8081"
 	}
+
+	server.Run(":" + port)
+
 }
