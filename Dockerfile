@@ -19,7 +19,7 @@ RUN ls; \
 ##
 FROM scratch
 
-    LABEL lan="golang" app="httpserver" maintainer="jiac"
+LABEL lan="golang" app="httpserver" maintainer="jiac"
 
 WORKDIR /
 
@@ -32,7 +32,4 @@ ENV PORT=
 EXPOSE $PORT
 
 ENTRYPOINT ["/bin/httpserver"]
-
-
-ENTRYPOINT ["/httpserver"]
 
