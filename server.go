@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"github.com/cncamp/golang/httpserver_gin/controller"
 	"github.com/cncamp/golang/httpserver_gin/middleware"
 	"github.com/cncamp/golang/httpserver_gin/service"
@@ -18,9 +20,24 @@ var (
 func main() {
 	server := gin.New()
 
+	// flag接受日志类型参数
+	debug := flag.String("debug", "0", "specify the type of the log")
+	flag.Parse()
+	if *debug == "1" {
+		fmt.Println("the httpserver run in debug mode now!")
+	} else {
+		fmt.Println("the httpserver run in product mode now!")
+	}
+
 	//server.Use(gin.Logger(), gin.Recovery())
 	// 自定义日志输出, 生产日志middleware.ProductionLogger, Debug日志gindump.Dump
-	server.Use(middleware.ProductionLogger(), gin.Recovery(), middleware.BasicAuth(), gindump.Dump())
+	if *debug == "1" {
+		server.Use(gin.Recovery(), gindump.Dump())
+	} else {
+		// 生产模式使用BasicAuth()验证
+		server.Use(middleware.BasicAuth(), middleware.ProductionLogger(), gin.Recovery())
+	}
+
 
 	apiGroup := server.Group("/api")
 	{
@@ -41,7 +58,7 @@ func main() {
 	// 设置环境变量, 达到配置与代码分离
 	port := os.Getenv("PORT")
 	if port == ""{
-		port = "8081"
+		port = "8082"
 	}
 
 	server.Run(":" + port)
