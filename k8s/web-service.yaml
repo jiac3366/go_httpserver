@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Service
+metadata:
+  annotations:
+    app: httpserver
+    kompose.cmd: kompose convert
+    kompose.version: 1.7.0 (HEAD)
+    lan: golang
+    maintainer: jiac
+  creationTimestamp: null
+  labels:
+    io.kompose.service: web
+  name: web
+spec:
+  ports:
+    - name: "80"
+      port: 80
+      targetPort: 8082
+  selector:
+    io.kompose.service: web
+status:
+  loadBalancer: {}
