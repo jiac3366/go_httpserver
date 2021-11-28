@@ -11,7 +11,10 @@ TLS encrypted communication, configuration and code separation, etc:
 - 探活
 - 资源需求
 - QoS 保证
-- HTTPS
 - 代码与配置分离
 - 日志等级
-- 身份授权（基于ConfigMap）
+- 身份授权
+- 对内外发布
+
+======待完善=======
+- HTTPS
