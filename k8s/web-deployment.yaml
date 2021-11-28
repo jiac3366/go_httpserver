@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
+  annotations: # Dockerfile LABEL
     app: httpserver
     kompose.cmd: kompose convert
     kompose.version: 1.7.0 (HEAD)
@@ -13,11 +13,17 @@ metadata:
   name: web
 spec:
   replicas: 1
+  strategy: #
+    type: Recreate
+  selector: #
+    matchLabels:
+      app: httpserver
   template:
     metadata:
       creationTimestamp: null
       labels:
         io.kompose.service: web
+        app: httpserver
     spec:
       containers:
         - args:
@@ -32,15 +38,15 @@ spec:
               value: "1.0"
             #身份认证
             - name: name
-                valueFrom:
-                  secretKeyRef:
-                    name: httpserver-secret
-                    key: name
+              valueFrom:
+                secretKeyRef:
+                  name: httpserver-secret
+                  key: name
             - name: pwd
-                valueFrom:
-                  secretKeyRef:
-                    name: httpserver-secret
-                    key: pwd
+              valueFrom:
+                secretKeyRef:
+                  name: httpserver-secret
+                  key: pwd
           image: 463045792/httpserver:vlog
           name: httpserver
           ports:
