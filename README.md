@@ -13,8 +13,10 @@ TLS encrypted communication, configuration and code separation, etc:
 - QoS 保证
 - 代码与配置分离
 - 日志等级
-- 身份授权
+- 身份授权（基于Secret的basic auth）
 - 对内外发布
 
 ======待完善=======
 - HTTPS
+- 更完善的授权机制（JWT）
+- CICD
