@@ -23,14 +23,14 @@ spec:
       creationTimestamp: null
       labels:
         io.kompose.service: web
-        app: httpserver
+        app: httpserver #
     spec:
       containers:
         - args:
             #启动参数
             - /bin/httpserver
             - -debug=1
-        - env:
+          env:
             #环境变量
             - name: PORT
               value: "8082"
@@ -48,6 +48,7 @@ spec:
                   name: httpserver-secret
                   key: pwd
           image: 463045792/httpserver:vlog
+          imagePullPolicy: Always
           name: httpserver
           ports:
             - containerPort: 8082
