@@ -8,8 +8,8 @@ import (
 func BasicAuth() gin.HandlerFunc {
 
 	// 从Secret中获取
-	name := os.Getenv("name")  //jiaccc
-	pwd := os.Getenv("pwd")   // 3366
+	name := os.Getenv("name")
+	pwd := os.Getenv("pwd")
 	return gin.BasicAuth(gin.Accounts{
 		name: pwd,
 	})

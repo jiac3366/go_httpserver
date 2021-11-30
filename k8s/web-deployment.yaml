@@ -13,23 +13,25 @@ metadata:
   name: web
 spec:
   replicas: 1
-  strategy: #
-    type: Recreate
+  strategy: # 指定部署策略
+    rollingUpdate:
+      maxSurge: 1 # 最大额外可以存在的副本数，可以为百分比、整数
+      maxUnavailable: 1 # 表示在更新过程中能够进入不可用状态的 Pod 的最大值，可以百分比、整数
+    type: RollingUpdate # 更新策略，包括：重建(Recreate)、RollingUpdate(滚动更新)
   selector: #
     matchLabels:
       app: httpserver
   template:
     metadata:
       creationTimestamp: null
-      labels:
+      labels:  # 指定Pod的标签，对应service的selector
         io.kompose.service: web
         app: httpserver #
     spec:
       containers:
-        - args:
-            #启动参数
+        - command:
             - /bin/httpserver
-            - -debug=1
+            - --debug=1
           env:
             #环境变量
             - name: PORT
@@ -48,10 +50,20 @@ spec:
                   name: httpserver-secret
                   key: pwd
           image: 463045792/httpserver:vlog
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           name: httpserver
           ports:
             - containerPort: 8082
-          resources: { }
-      restartPolicy: Always
+          resources: # 资源管理
+            limits: # limits用于设置容器使用资源的最大上限,避免异常情况下节点资源消耗过多
+              cpu: "1" # 设置cpu limit，1核心 = 1000m
+              memory: 1Gi # 设置memory limit，1G = 1024Mi
+            requests: # requests用于预分配资源,当集群中的节点没有request所要求的资源数量时,容器会创建失败
+              cpu: 250m # 设置cpu request
+              memory: 500Mi # 设置memory request
+          terminationMessagePath: /dev/termination-log # 容器终止时消息保存路径
+          terminationMessagePolicy: File # 仅从终止消息文件中检索终止消息
+      restartPolicy: Always # 重启策略，Always、OnFailure、Never  # deploy强制使用Always
+      terminationGracePeriodSeconds: 5  # 优雅关闭时间，这个时间内优雅关闭未结束，k8s 强制 kill
+
 status: { }

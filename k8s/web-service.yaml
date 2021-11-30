@@ -14,8 +14,8 @@ metadata:
 spec:
   ports:
     - name: "80"
-      port: 80
-      targetPort: 8082
+      port: 80  # vitual Ip port
+      targetPort: 8082  # real server port, and real Ips are Ips of pods filtered by "selector"
   selector:
     io.kompose.service: web
 status:
