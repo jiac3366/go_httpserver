@@ -58,8 +58,6 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
 
 ## Feature
 
-- 优雅启动
-
 - 优雅终止
 
   ```go
@@ -85,7 +83,7 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
   log.Println("healthyServer Exited Properly")
   ```
 
-- 探活/QoS 保证
+- 优雅启动 / 探活 / QoS 保证
 
   ```yaml
             livenessProbe: # 存活检查，检查容器是否正常，不正常则重启实例
@@ -136,7 +134,7 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
 
   
 
-- 日志等级 / 代码配置分离
+- 日志等级 / 代码配置分离(从YAML中传入debug参数指定日志等级)
   ![image-20211130080451332](https://cdn.jsdelivr.net/gh/jiac3366/image-host@master/httpserver/2299500dacebaf4028b0015266fb924.pmtjq7y8hq8.png)
   
 - 身份授权（基于Secret的basic auth）
