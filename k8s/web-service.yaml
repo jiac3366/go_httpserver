@@ -14,9 +14,14 @@ metadata:
 spec:
   ports:
     - name: "80"
-      port: 80  # vitual Ip port
-      targetPort: 8082  # real server port, and real Ips are Ips of pods filtered by "selector"
+      port: 80  # virtualIp port
+      targetPort: 8082  # real server port, what's more, real Ips are Ips of pods filtered by "selector"
+    - name: "8088"
+        port: 8088
+        targetPort: 8088
   selector:
     io.kompose.service: web
+  sessionAffinity: None
+  type: NodePort
 status:
   loadBalancer: {}

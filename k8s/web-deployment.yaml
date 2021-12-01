@@ -28,6 +28,8 @@ spec:
         io.kompose.service: web
         app: httpserver #
     spec:
+#      readinessGates:
+#        - conditionType:  #可以添加只有给pod的dns配好了才接收流量的场景
       containers:
         - command:
             - /bin/httpserver
@@ -54,7 +56,46 @@ spec:
           name: httpserver
           ports:
             - containerPort: 8082
-          resources: # 资源管理
+          lifecycle: # 当一个容器启动后，Kubernetes将立即发送postStart事件；在容器被终结之前，Kubernetes将发送一个preStop事件
+            postStart:
+              exec:
+                command: [ "/bin/sh", "-c", "echo Hello from the postStart handler" ]
+#            preStop:
+#              exec:
+#                command: [ "/bin/sh","-c","nginx -s quit; while killall -0 nginx; do sleep 1; done" ]
+          livenessProbe: # 存活检查，检查容器是否正常，不正常则重启实例
+            httpGet: # HTTP请求检查方法
+              path: /healthz # 请求路径
+              port: 8088 # 检查端口
+              scheme: HTTP # 检查协议
+            initialDelaySeconds: 10 # 启动延时，容器延时启动健康检查的时间
+            periodSeconds: 5 # 间隔时间，进行健康检查的时间间隔，通常5s/10s
+            successThreshold: 2 # 健康阈值，连续多少次正常才认为是success
+            failureThreshold: 2 # 不健康阈值，连续多少次出错才认为是error
+            timeoutSeconds: 3 # 响应超时，超过这个时间不响应就认为是失败
+          readinessProbe: # 就绪检查，检查容器是否就绪，不就绪则停止转发流量到当前实例
+            httpGet:
+              ### this probe will fail with 404 error code
+              ### only httpcode between 200-400 is retreated as success
+              path: /healthz
+              port: 8088
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 2
+            failureThreshold: 2
+            timeoutSeconds: 3
+          startupProbe: # 启动探针，可以知道应用程序容器什么时候启动了
+            httpGet:
+              path: /healthz
+              port: 8088
+              scheme: HTTP
+            initialDelaySeconds: 1  # 比livenessProbe早执行
+            periodSeconds: 10  # 频度比livenessProbe要低，只有startupProbe成功，livenessProbe
+            successThreshold: 1
+            failureThreshold: 10
+            timeoutSeconds: 3
+          resources: # 资源需求
             limits: # limits用于设置容器使用资源的最大上限,避免异常情况下节点资源消耗过多
               cpu: "1" # 设置cpu limit，1核心 = 1000m
               memory: 1Gi # 设置memory limit，1G = 1024Mi
@@ -64,6 +105,5 @@ spec:
           terminationMessagePath: /dev/termination-log # 容器终止时消息保存路径
           terminationMessagePolicy: File # 仅从终止消息文件中检索终止消息
       restartPolicy: Always # 重启策略，Always、OnFailure、Never  # deploy强制使用Always
-      terminationGracePeriodSeconds: 5  # 优雅关闭时间，这个时间内优雅关闭未结束，k8s 强制 kill
-
+      terminationGracePeriodSeconds: 30  # 优雅关闭时间，这个时间内优雅关闭未结束，k8s 强制 kill
 status: { }

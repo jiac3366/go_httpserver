@@ -9,7 +9,7 @@ services:
       maintainer: "jiac"
     environment:
       - version=1.0
-      - debug=--settings=settings.local
+      - debug=
       - PORT=8082
     ports:
       - 80:8082
