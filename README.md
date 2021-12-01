@@ -1,11 +1,63 @@
-
 # httpserver deploy in kubernetes cluster
 
-
 ## What is this?
+
 The project realizes the functions of mainstream httpserver based on golang / gin, including elegant start 
 and termination of services, service activation and QoS service quality assurance mechanism, message parsing, 
 TLS encrypted communication, configuration and code separation, etc:
+
+## Usage
+
+```shell
+git clone git@github.com:jiac3366/go_httpserver.git
+cd go_httpserver/k8s/
+k create -f httpserver-secret.yaml
+k create -f web-deployment.yaml
+k create -f web-service.yaml
+k get svc # 取得NodePort
+```
+
+```shell
+# Example
+
+curl --location --request POST 'http://192.168.34.3:30658/api/orders' \
+--header 'Authorization: Basic amlhYzozMzY2' \
+--header 'Content-Type: text/plain' \
+--data-raw '{
+    "id":666,
+    "partner": {
+        "name": "jiac",
+        "age": 22,
+        "email": "463045792@qq.com"
+    }
+}'
+
+> {
+    "message": "OK"
+}
+
+
+curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
+--header 'Authorization: Basic amlhYzozMzY2'
+
+>[
+    {
+        "id": 666,
+        "partner": {
+            "name": "jiac",
+            "age": 22,
+            "company": "",
+            "email": "463045792@qq.com"
+        },
+        "description": ""
+    }
+]
+```
+
+
+
+## Feature
+
 - 优雅启动
 
 - 优雅终止
@@ -86,8 +138,7 @@ TLS encrypted communication, configuration and code separation, etc:
 
 - 日志等级 / 代码配置分离
   ![image-20211130080451332](https://cdn.jsdelivr.net/gh/jiac3366/image-host@master/httpserver/2299500dacebaf4028b0015266fb924.pmtjq7y8hq8.png)
-  ![image-20211130162307362](C:\Users\46304\AppData\Roaming\Typora\typora-user-images\image-20211130162307362.png)
-
+  
 - 身份授权（基于Secret的basic auth）
   ![image-20211130080451337](https://cdn.jsdelivr.net/gh/jiac3366/image-host@master/httpserver/image-20211130080451337.26njmyu47mlc.png)
 
