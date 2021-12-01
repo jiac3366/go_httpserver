@@ -51,15 +51,16 @@ spec:
                 secretKeyRef:
                   name: httpserver-secret
                   key: pwd
-          image: 463045792/httpserver:vlog
+          image: 463045792/apiserver:v2.1
           imagePullPolicy: IfNotPresent
           name: httpserver
           ports:
             - containerPort: 8082
-          lifecycle: # 当一个容器启动后，Kubernetes将立即发送postStart事件；在容器被终结之前，Kubernetes将发送一个preStop事件
-            postStart:
-              exec:
-                command: [ "/bin/sh", "-c", "echo Hello from the postStart handler" ]
+#          lifecycle: # 当一个容器启动后，Kubernetes将立即发送postStart事件；在容器被终结之前，Kubernetes将发送一个preStop事件
+#            postStart:
+#              exec:
+#                 #容器镜像不支持/bin/bash 所以注释了
+#                command: [ "/bin/sh", "-c", "echo Hello from the postStart handler" ]
 #            preStop:
 #              exec:
 #                command: [ "/bin/sh","-c","nginx -s quit; while killall -0 nginx; do sleep 1; done" ]
@@ -70,7 +71,7 @@ spec:
               scheme: HTTP # 检查协议
             initialDelaySeconds: 10 # 启动延时，容器延时启动健康检查的时间
             periodSeconds: 5 # 间隔时间，进行健康检查的时间间隔，通常5s/10s
-            successThreshold: 2 # 健康阈值，连续多少次正常才认为是success
+            successThreshold: 1 # 健康阈值，连续多少次正常才认为是success  # 强制是1
             failureThreshold: 2 # 不健康阈值，连续多少次出错才认为是error
             timeoutSeconds: 3 # 响应超时，超过这个时间不响应就认为是失败
           readinessProbe: # 就绪检查，检查容器是否就绪，不就绪则停止转发流量到当前实例

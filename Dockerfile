@@ -11,7 +11,7 @@ COPY . .
 RUN ls; \
     go env -w GOPROXY="https://goproxy.io,direct"; \
     go mod vendor; \
-    CGO_ENABLED=0 GOARCH=amd64 go build
+    CGO_ENABLED=0 GOARCH=amd64 go build -o /bin/httpserver
 
 
 ##
