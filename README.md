@@ -88,7 +88,7 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
   ```yaml
             livenessProbe: # 存活检查，检查容器是否正常，不正常则重启实例
               httpGet: # HTTP请求检查方法
-                path: /healthz # 请求路径
+                path: /healthz # 请求路径，根据返回的code判断是否成功探活
                 port: 8088 # 检查端口
                 scheme: HTTP # 检查协议
               initialDelaySeconds: 5 # 启动延时，容器延时启动健康检查的时间
@@ -106,14 +106,14 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
               successThreshold: 1
               failureThreshold: 1
               timeoutSeconds: 3
-            startupProbe: # 启动探针，可以知道应用程序容器什么时候启动了
-              failureThreshold: 10
+            startupProbe: # 启动探针(针对一些慢启动的容器)，可以知道应用程序容器什么时候启动了
+              failureThreshold: 10  # ！
               httpGet:
                 path: /healthz
                 port: 8088
                 scheme: HTTP
               initialDelaySeconds: 1  #
-              periodSeconds: 10
+              periodSeconds: 10  # ！应用程序有failureThreshold * periodSeconds的时间启动
               successThreshold: 1
               timeoutSeconds: 3
   ```
