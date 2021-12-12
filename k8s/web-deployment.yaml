@@ -12,6 +12,8 @@ metadata:
     io.kompose.service: web
   name: web
 spec:
+  revisionHistoryLimit: 10  # 节省etcd的控件
+  progressDeadlineSeconds: 600 # ?
   replicas: 1
   strategy: # 指定部署策略
     rollingUpdate:
@@ -28,6 +30,8 @@ spec:
         io.kompose.service: web
         app: httpserver #
     spec:
+#      imagePullSecrets:  --引入secret
+#        - xxx
 #      readinessGates:
 #        - conditionType:  #可以添加只有给pod的dns配好了才接收流量的场景
       containers:
@@ -96,7 +100,7 @@ spec:
             successThreshold: 1
             failureThreshold: 10
             timeoutSeconds: 3
-          resources: # 资源需求
+          resources: # 资源需求（Qos）
             limits: # limits用于设置容器使用资源的最大上限,避免异常情况下节点资源消耗过多
               cpu: "1" # 设置cpu limit，1核心 = 1000m
               memory: 1Gi # 设置memory limit，1G = 1024Mi
@@ -106,5 +110,17 @@ spec:
           terminationMessagePath: /dev/termination-log # 容器终止时消息保存路径
           terminationMessagePolicy: File # 仅从终止消息文件中检索终止消息
       restartPolicy: Always # 重启策略，Always、OnFailure、Never  # deploy强制使用Always
-      terminationGracePeriodSeconds: 30  # 优雅关闭时间，这个时间内优雅关闭未结束，k8s 强制 kill
-status: { }
+      terminationGracePeriodSeconds: 30  # 优雅关闭时间，这个时间内优雅关闭未结束，k8s 强制 kill pod
+      volumes: # 配置数据卷，类型详见https://kubernetes.io/zh/docs/concepts/storage/volumes
+        - configMap: # configMap 类型的数据卷
+            defaultMode: 420 #权限设置0~0777，默认0664
+            items:
+              - key: iam-apiserver.yaml
+                path: iam-apiserver.yaml
+            name: iam # configmap名称
+          name: iam # 设置卷名称，与volumeMounts名称对应
+        - configMap:
+            defaultMode: 420
+            name: iam-cert
+          name: iam-cert
+

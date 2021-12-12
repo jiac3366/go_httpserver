@@ -147,12 +147,20 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
       ![image-20211130075828190](https://cdn.jsdelivr.net/gh/jiac3366/image-host@master/httpserver/959419e376223ca57ce31df0e69ee03.5ecrpo120rc0.png)
     - 基于service NodePort
       ![image-20211130081828163](https://cdn.jsdelivr.net/gh/jiac3366/image-host@master/httpserver/6eec6296b4e14f507965220791edbd2.2nf87vzu3b00.png)
-  - Ingress
+    - TODO: 基于阿里云LoadBalancer
 
-  
+  - Ingress + 证书认证
+    - 基于ingress-nginx controller
+      - 创建ingress-nginx controller
+        - ![img.png](img.png)
+      - 创建证书 （个人项目可以使用cert-manager），
+        - 需要首先配issuer,letsencrypt要先解析一下你的域名是否合法，可以把issuer看做letsencrypt的载体
+          - ![img_1.png](img_1.png)
+      - 创建ingress
+        - ![img_2.png](img_2.png)
+
 
 ======待完善=======
 
-- HTTPS
 - 更完善的授权机制（JWT）
 - CICD
