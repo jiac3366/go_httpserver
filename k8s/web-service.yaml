@@ -2,25 +2,20 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    app: httpserver
-    kompose.cmd: kompose convert
-    kompose.version: 1.7.0 (HEAD)
-    lan: golang
     maintainer: jiac
-  creationTimestamp: null
-  labels:
-    io.kompose.service: web
+#  labels:
+#    app: httpserver
   name: web
 spec:
   ports:
     - name: "80"
       port: 80  # virtualIp port
       targetPort: 8082  # real server port, what's more, real Ips are Ips of pods filtered by "selector"
-    - name: "8088"
-      port: 8088
-      targetPort: 8088
+    - name: "8083"
+      port: 8083
+      targetPort: 8083
   selector:
-    io.kompose.service: web
+    app: httpserver
   sessionAffinity: None
   type: NodePort
 status:

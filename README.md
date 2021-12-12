@@ -58,6 +58,8 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
 
 ## Feature
 
+- 与Prometheus结合实现监控
+
 - 优雅终止
 
   ```go
