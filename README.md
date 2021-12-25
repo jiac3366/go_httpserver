@@ -156,9 +156,9 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
       - 创建ingress-nginx controller
         - ![img.png](img.png)
       - 创建证书 （个人项目可以使用cert-manager），
-        - 需要首先配issuer,letsencrypt要先解析一下你的域名是否合法，可以把issuer看做letsencrypt的载体
+        - 需要首先配issuer,letsencrypt在里面要先解析一下你的域名是否合法或者是否已经做了IP解析，可以把issuer看做letsencrypt的载体
           - ![img_1.png](img_1.png)
-      - 创建ingress
+      - 创建ingress （域名指向的service的ClusterIP）
         - ![img_2.png](img_2.png)
 
 
