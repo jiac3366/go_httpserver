@@ -1,0 +1,64 @@
+# 1.openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=jiac Inc./CN=*.jiac.online' -keyout jiac.online.key -out jiac.online.crt
+# 2.kubectl create -n istio-system secret tls jiac-credential --key=jiac.online.key --cert=jiac.online.crt
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: apiserver
+spec:
+  gateways:
+    - apiserver
+  hosts:
+    - apiserver.jiac.online
+  http:
+    - match:
+      - uri:
+          exact: "/orders"
+      rewrite:
+        uri: "/api/orders"
+      route:
+        - destination:
+            host: web.default.svc.cluster.local
+            port:
+              number: 80
+    - match:
+      - uri:
+          prefix: "/api/healthz"
+      rewrite:
+        uri: "/healthz"
+      route:
+        - destination:
+            host: web.default.svc.cluster.local
+            port:
+              number: 80
+    - match:
+      - port: 443
+      route:
+        - destination:
+            host: web.default.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: apiserver
+  ## Gateway 对应 listener
+spec:
+  selector:
+    istio: ingressgateway # 往带有这个标签的 ingress po加入下面的规则
+  servers:
+    - hosts:
+        - apiserver.jiac.online
+      port:
+        name: http-apiserver
+        number: 80
+        protocol: HTTP
+    - hosts:
+        - apiserver.jiac.online
+      port:
+        name: https-apiserver
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: jiac-credential

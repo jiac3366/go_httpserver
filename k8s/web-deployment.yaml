@@ -86,7 +86,7 @@ spec:
               port: 8082
               scheme: HTTP
             initialDelaySeconds: 1  # 比livenessProbe早执行
-            periodSeconds: 10  # 频度比livenessProbe要低，只有startupProbe成功，livenessProbe
+            periodSeconds: 10  # ！应用程序有failureThreshold * periodSeconds的时间启动，频度比livenessProbe要低
             successThreshold: 1
             failureThreshold: 10
             timeoutSeconds: 3

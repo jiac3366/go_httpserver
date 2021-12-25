@@ -19,9 +19,6 @@ github.com/go-playground/locales/currency
 github.com/go-playground/universal-translator
 # github.com/go-playground/validator/v10 v10.4.1
 github.com/go-playground/validator/v10
-# github.com/golang/glog v1.0.0
-## explicit
-github.com/golang/glog
 # github.com/golang/protobuf v1.5.2
 ## explicit
 github.com/golang/protobuf/proto

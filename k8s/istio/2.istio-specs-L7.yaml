@@ -1,0 +1,30 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: apiserver
+spec:
+  gateways:
+    - apiserver
+  hosts:
+    - apiserver.jiac.online
+  http:
+    - match:
+        - uri:
+            exact: "/orders"
+      rewrite:
+        uri: "/api/orders"
+      route:
+        - destination:
+            host: web.default.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: "/api/healthz"
+      rewrite:
+        uri: "/healthz"
+      route:
+        - destination:
+            host: web.default.svc.cluster.local
+            port:
+              number: 80
