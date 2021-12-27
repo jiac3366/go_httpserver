@@ -7,7 +7,6 @@ import (
 	"github.com/cncamp/golang/httpserver_gin/service"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	gindump "github.com/tpkeeper/gin-dump"
 	"net/http"
 	"time"
 )
@@ -24,7 +23,7 @@ func ProductHandler(debug *string) http.Handler {
 	// 自定义日志输出, 生产日志middleware.ProductionLogger, Debug日志gindump.Dump
 	//中间件做成可加载的，通过配置文件指定程序启动时加载哪些中间件。只将一些通用的、必要的功能做成中间件。在编写中间件时，一定要保证中间件的代码质量和性能
 	if *debug == "1" {
-		server.Use(gin.Recovery(), gindump.Dump())
+		server.Use(gin.Recovery()) //, gindump.Dump()
 	} else {
 		// 生产模式使用BasicAuth()验证
 		server.Use(middleware.BasicAuth(), middleware.ProductionLogger(), gin.Recovery())
@@ -48,9 +47,12 @@ func ProductHandler(debug *string) http.Handler {
 				ctx.JSON(http.StatusOK, gin.H{"message": "OK"})
 			}
 		})
+
+		apiGroup.GET("/tracing", TracingHandler)
+
 	}
 
-	healthGroup := server.Group("/healthz")
+		healthGroup := server.Group("/healthz")
 	{
 		healthGroup.GET("/", func(ctx *gin.Context) {
 			ctx.JSON(200, "ok\n")

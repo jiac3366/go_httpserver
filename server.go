@@ -50,6 +50,13 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	}
 
+	//tracingRouter := &http.Server{
+	//	Addr:         ":" + port,
+	//	Handler:      handlers.TracingHandler(),
+	//	ReadTimeout:  5 * time.Second,
+	//	WriteTimeout: 10 * time.Second,
+	//}
+
 	//TODO: why Cannot call the nonfunction productRouter that has the type *Server
 	//secureProductRouter := &http.Server{
 	//	Addr: ":8443",
@@ -58,7 +65,7 @@ func main() {
 	//	WriteTimeout: 10 * time.Second,
 	//}
 
-	//====================channel================
+	// DEFINE CHANNEL
 	// srv.ListenAndServe 放在 goroutine 中执行，这样不会阻塞 srv.Shutdown 函数
 	// srv放在了 goroutine 中，需要一种可以让整个进程常驻的机制。
 	// 调用 signal.Notify 函数将该 channel 绑定到 SIGINT、SIGTERM 信号上
@@ -87,6 +94,14 @@ func main() {
 		}
 		return err
 	})
+
+	//eg.Go(func() error {
+	//	err := tracingRouter.ListenAndServe()
+	//	if err != nil && err != http.ErrServerClosed {
+	//		log.Fatal(err)
+	//	}
+	//	return err
+	//})
 
 	//TODO:
 	//eg.Go(func() error {
@@ -118,5 +133,10 @@ func main() {
 		log.Fatalf("productRouter forced to shutdown:%+v", err)
 	}
 	log.Println("metricsRouter Exited Properly")
+
+	//if err := tracingRouter.Shutdown(ctx); err != nil {
+	//	log.Fatalf("productRouter forced to shutdown:%+v", err)
+	//}
+	//log.Println("tracingRouter Exited Properly")
 
 }
