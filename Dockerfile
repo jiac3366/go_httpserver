@@ -8,4 +8,4 @@ ENV PORT=
 
 EXPOSE $PORT
 
-ENTRYPOINT ["/httpserver"]
+ENTRYPOINT ["/httpserver_gin"]

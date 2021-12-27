@@ -18,5 +18,4 @@ spec:
     app: httpserver
   sessionAffinity: None
   type: NodePort
-status:
-  loadBalancer: {}
+

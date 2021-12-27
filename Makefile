@@ -2,7 +2,8 @@ export tag=v4.0
 build:
 	echo "building httpserver_gin binary"
 	mkdir -p bin/amd64
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/amd64 .
+	#CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/amd64 .
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/amd64/httpserver_gin .
 
 release: build
 	echo "building httpserver_gin container"
