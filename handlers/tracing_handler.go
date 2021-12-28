@@ -35,7 +35,7 @@ func TracingHandler(ctx *gin.Context) {
 	w := ctx.Writer //!!
 	io.WriteString(w, "===================Details of the http request header:============\n")
 	fmt.Printf("===================Details of the http request header:============\n")
-	req, err := http.NewRequest("GET", "http://service1", nil)
+	req, err := http.NewRequest("GET", "http://service2", nil)
 	if err != nil {
 		fmt.Printf("%s", err)
 	}
