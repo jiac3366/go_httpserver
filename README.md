@@ -1,4 +1,4 @@
-# httpserver deploy in kubernetes cluster
+# Apiserver deploy in kubernetes cluster
 
 ## Hi!What is this?
 
@@ -6,7 +6,7 @@ The project realizes the functions of mainstream httpserver based on golang / gi
 and termination of services, service activation and QoS service quality assurance mechanism, message parsing, 
 TLS encrypted communication, configuration and code separation, etc:
 
-## Example
+## Quick Start
 
 ```shell
 git clone git@github.com:jiac3366/go_httpserver.git
@@ -14,11 +14,11 @@ cd go_httpserver/k8s/
 k create -f httpserver-secret.yaml
 k create -f web-deployment.yaml
 k create -f web-service.yaml
-k get svc # 取得NodePort, 本例为30658
+k get svc # get the NodePort, the example is 30658.
 ```
 
 ```shell
-# 访问service NodePort: [k8sIP]:[NodePort]/url
+# visit service NodePort: [k8sIP]:[NodePort]/url
 
 curl --location --request POST 'http://192.168.34.3:30658/api/orders' \
 --header 'Authorization: Basic amlhYzozMzY2' \
@@ -56,7 +56,7 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
 
 
 
-## Feature
+## Features
 - v3.0: Commit: [基于Istio实现流量管理，灰度发布，混沌测试](readme_docs/v3.0.md)
 
 - v2.1: Commit: 与Prometheus结合实现监控
