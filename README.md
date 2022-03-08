@@ -57,11 +57,11 @@ curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
 
 
 ## Features
-- v3.0: Commit: [基于Istio实现流量管理，灰度发布，混沌测试](readme_docs/v3.0.md)
+- v3.0: [基于Istio实现流量管理，灰度发布，混沌测试](readme_docs/v3.0.md)
 
-- v2.1: Commit: 与Prometheus结合实现监控
+- v2.1: 与Prometheus结合实现监控
 
-- v1.0 [优雅终止 / 优雅启动 / 探活 / QoS / 服务发布 ](readme_docs/v1.0.md)
+- v1.0: [优雅终止 / 优雅启动 / 探活 / QoS / 服务发布 ](readme_docs/v1.0.md)
  
 
 ## Todo:
