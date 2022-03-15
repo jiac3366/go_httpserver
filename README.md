@@ -35,8 +35,9 @@ curl --location --request POST 'http://192.168.34.3:30658/api/orders' \
 > {
     "message": "OK"
 }
+```
 
-
+```shell
 curl --location --request GET 'http://192.168.34.3:30658/api/orders' \
 --header 'Authorization: Basic amlhYzozMzY2'
 
